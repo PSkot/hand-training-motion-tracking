@@ -1,0 +1,21 @@
+hand_connections:
+  - [0, 1]  # Thumb
+  - [1, 2]  # Thumb
+  - [2, 3]  # Thumb  
+  - [3, 4]  # Thumb
+  - [0, 5]  # Index
+  - [5, 6]  # Index
+  - [6, 7]  # Index
+  - [7, 8]  # Index
+  - [0, 9]  # Middle
+  - [9, 10]  # Middle
+  - [10, 11]  # Middle
+  - [11, 12]  # Middle
+  - [0, 13]  # Ring
+  - [13, 14]  # Ring
+  - [14, 15]  # Ring
+  - [15, 16]  # Ring
+  - [0, 17]  # Pinky
+  - [17, 18]  # Pinky
+  - [18, 19]  # Pinky
+  - [19, 20]  # Pinky

@@ -1,0 +1,7 @@
+HanCoRGB: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_rgb.zip
+HanCoForegroundMasks: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_mask_fg.zip
+HanCoHandMasks: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_mask_hand.zip
+HanCo3DKeypoints: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_xyz.zip
+HanCoHandShapeParameters: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_shape.zip
+HanCoCalibrationAndMetaInfo: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_calib_meta.zip
+HanCoMerged: https://lmb.informatik.uni-freiburg.de/data/HanCo/HanCo_rgb_merged.zip

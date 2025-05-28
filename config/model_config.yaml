@@ -1,0 +1,14 @@
+TUNING: False
+SUBSET: Null # Null uses full dataset, otherwise specify int
+IMAGENET_PARAMS:
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+DATA_PATH: Null # Specify path of set to null to get path from environment variable HANCO_DATA_PATH
+BATCH_SIZE: 16
+EPOCHS: 200
+EARLY_STOPPING_PATIENCE: 10
+HUBER_BETA: 0.01
+INITIAL_LR: 0.000001
+RANDOM_SEED: 42
+MODEL_PATH: .\saved_models
+MODEL_NAME: best_model.pth

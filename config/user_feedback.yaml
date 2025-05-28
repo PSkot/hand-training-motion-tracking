@@ -1,0 +1,11 @@
+fstretch:
+  "0000": # Exercise state
+    0: # Cluster
+      message: Almost there! Stretch your fingers a little more... # User message
+      color: [0, 255, 255] # Message color
+    1:
+      message: Stretch your fingers.
+      color: [0, 0, 255]
+    2:
+      message: Very good! Keep fingers stretched!
+      color: [0, 255, 0]
