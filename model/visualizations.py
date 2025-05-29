@@ -3,11 +3,15 @@ import train_kmeans
 import matplotlib.pyplot as plt
 import src.model_setup as model_setup
 import torch
-import matplotlib.pyplot as plt
 import os
 import torchvision.transforms.v2 as transforms
+import torchvision.transforms.functional as TF
 from matplotlib.patches import Patch
+from src.HandDataset import HandDataset
+import seaborn as sns
+import pandas as pd
 from src.helpers import *
+import cv2
 
 PLOT_ORDER = [2, 0, 1]  # Change display order here
 N_CLUSTERS = len(PLOT_ORDER)
@@ -305,3 +309,107 @@ def plot_landmark_flip_rotation(
     plt.savefig(save_path)
     plt.close()
     print(f"Saved landmark rotation figure to: {save_path}")
+
+
+def get_test_hand_image(
+    config, radius=2, color=(0, 200, 0), line_color=(200, 0, 0), idx=0, prediction=True
+):
+    """
+    Draw 3D landmarks (in camera coordinates) onto an image using camera intrinsics.
+
+    Args:
+        image (Tensor): [3, H, W] RGB image
+        landmarks (Tensor): [21, 3] 3D landmarks in camera coordinates
+        K (Tensor): [3, 3] camera intrinsics matrix
+        radius (int): circle radius for each landmark
+        color (tuple): BGR color for landmarks
+        line_color (tuple): BGR color for connections
+
+    Returns:
+        Tensor: Image with landmarks drawn (same shape as input)
+    """
+
+    model = model_setup.get_hand_model(config)
+    model.change_augmentation_flag(False)
+    hand_connections = read_hand_keypoints()
+
+    datapoint = model.test_dataset[idx]
+
+    root = datapoint["root"]
+    scale = datapoint["scale"]
+
+    image = datapoint["image"]
+
+    if prediction:
+        landmark_input = datapoint["landmarks"].reshape(21, 3)
+    else:
+        landmark_input = torch.Tensor(model.predict(image.unsqueeze(0)).reshape(21, 3))
+
+    landmarks = HandDataset.denormalize_landmarks(landmark_input, root, scale)
+    K, _ = datapoint["calibration"]
+
+    # Convert tensors to numpy
+    image_np = TF.to_pil_image(image).convert("RGB")
+    image_np = np.array(image_np)
+    H, W = image_np.shape[:2]
+
+    K_np = K.cpu().numpy()
+    landmarks_np = landmarks.cpu().numpy()
+
+    # Project 3D landmarks to 2D
+    points_2d = []
+    for point in landmarks_np:
+        x, y, z = point
+        if z <= 0:
+            continue  # avoid invalid projection
+        u = (K_np[0, 0] * x + K_np[0, 2] * z) / z
+        v = (K_np[1, 1] * y + K_np[1, 2] * z) / z
+        points_2d.append((int(u), int(v)))
+
+    # Draw connections
+    for i, j in hand_connections:
+        if i < len(points_2d) and j < len(points_2d):
+            pt1, pt2 = points_2d[i], points_2d[j]
+            cv2.line(image_np, pt1, pt2, line_color, 1, cv2.LINE_AA)
+
+    # Draw landmarks
+    for u, v in points_2d:
+        cv2.circle(image_np, (u, v), radius, color, -1, cv2.LINE_AA)
+
+    # Convert back to tensor
+    image_tensor = TF.to_tensor(image_np)  # [3, H, W]
+    return image_tensor
+
+
+def plot_r2_heatmap(
+    train_r2,
+    val_r2,
+    test_r2,
+    landmark_labels=None,
+    title="R² per Landmark",
+    save_path=None,
+):
+    num_landmarks = len(train_r2)
+
+    if landmark_labels is None:
+        landmark_labels = [f"{i+1}" for i in range(num_landmarks)]
+
+    # Create a DataFrame for seaborn
+    data = pd.DataFrame(
+        {"Train": train_r2, "Validation": val_r2, "Test": test_r2},
+        index=landmark_labels,
+    ).T
+
+    plt.figure(figsize=(num_landmarks * 0.7, 5))
+    sns.heatmap(
+        data, annot=True, cmap="YlGnBu", cbar=True, vmin=0.985, vmax=1, fmt=".3f"
+    )
+
+    plt.title(title)
+    plt.xlabel("Landmark")
+    plt.ylabel("Split")
+    plt.tight_layout()
+    if not save_path:
+        plt.show()
+        return
+    plt.savefig(save_path)

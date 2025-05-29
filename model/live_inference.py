@@ -17,43 +17,6 @@ import train_kmeans as train_kmeans
 from scipy.spatial.transform import Rotation as Rscipy
 
 CLUSTER_MAPPING = helpers.read_user_feedback()
-IMG_OUTPUT_FOLDER = "../images"
-
-
-def reapply_rotation(aligned_landmarks, R_original, axes_to_restore=[]):
-    """
-    Reapply selected axis rotations from the original rotation matrix R to aligned landmarks.
-
-    Args:
-        aligned_landmarks (np.ndarray): (N, 3) aligned landmarks
-        R_original (np.ndarray): (3, 3) original rotation matrix from alignment
-        axes_to_restore (list of str): Axes to restore, e.g., ["X", "Z"]
-
-    Returns:
-        rotated (np.ndarray): (N, 3) landmarks with partial rotation reapplied
-    """
-
-    if not axes_to_restore:
-        return aligned_landmarks
-
-    axes_to_restore = set(axis.upper() for axis in axes_to_restore)
-    rot = Rscipy.from_matrix(R_original)
-    euler = rot.as_euler("XYZ", degrees=False)
-
-    # Zero out unwanted axes
-    if "X" not in axes_to_restore:
-        euler[0] = 0
-    if "Y" not in axes_to_restore:
-        euler[1] = 0
-    if "Z" not in axes_to_restore:
-        euler[2] = 0
-
-    # Build filtered rotation matrix
-    R_filtered = Rscipy.from_euler("XYZ", euler).as_matrix()
-
-    # Reapply to aligned landmarks
-    rotated = (R_filtered @ aligned_landmarks.T).T
-    return rotated
 
 
 class HandExerciseApp(QWidget):
@@ -185,7 +148,7 @@ class HandExerciseApp(QWidget):
 
         # Update scatter
         aligned, R = lm.align_landmarks_stable(self.landmarks.reshape(21, 3))
-        self.hand_keypoints = reapply_rotation(aligned, R)  # [0]
+        self.hand_keypoints = aligned  # [0]
 
         distances = np.linalg.norm(self.hand_keypoints - self.t_landmarks, axis=1)
         max_dist = self.max_line_dist
@@ -284,22 +247,22 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config", type=str, required=True, help="Path to model config file."
     )
+    parser.add_argument(
+        "--kmeans_path", type=str, required=True, help="Path to model config file."
+    )
     args = parser.parse_args()
 
     hand_model = model_setup.get_hand_model(args.config)
-    kmeans_model = model_setup.get_kmeans(
-        "./saved_models/kmeans_fstretch_0000_aligned_landmarks.pkl"
-    )
+    kmeans_model = model_setup.get_kmeans(args.kmeans_path)
 
     t_path = f"./inference/landmark_predictions/teacher/fstretch/0000.json"
-    init_exercise = "0000"
 
     with open(t_path, "r") as f:
-        t_landmarks = {init_exercise: np.array(json.load(f))}
+        t_landmarks = {"0000": np.array(json.load(f))}
 
     app = QApplication(sys.argv)
     window = HandExerciseApp(
-        hand_model, kmeans_model, t_landmarks, init_exercise, display_teacher=True
+        hand_model, kmeans_model, t_landmarks, "0000", display_teacher=True
     )
     window.show()
     sys.exit(app.exec_())

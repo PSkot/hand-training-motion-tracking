@@ -12,8 +12,8 @@ import yaml
 import pickle
 
 
-def get_hand_model(config):
-    with open(config, "r") as f:
+def get_hand_model(config_path):
+    with open(config_path, "r") as f:
         conf = yaml.load(f, yaml.FullLoader)
 
     torch.manual_seed(conf.get("RANDOM_SEED"))

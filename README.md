@@ -62,10 +62,7 @@ To initialize a CNN model, load the config file and run the get_handmodel functi
 A model instance is required by several parts of the code.
 
 ```python
-with open("path/to/config.yaml", "r") as f:
-  config = yaml.load(f, yaml.FullLoader)
-
-model = model_setup.get_handmodel(config)
+model = model_setup.get_handmodel("path/to/config.yaml")
 ```
 
 Similarly, you can load a KMeans model:
@@ -98,5 +95,5 @@ visualizations.visualize_clusters(exercise = "fstretch", exercise_state = "0000"
 Running inference on images located in ./model/images can be done by simply running:
 
 ```
-python run_inference.py
+python run_inference.py --config path/to/config.yaml
 ```

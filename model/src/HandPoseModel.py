@@ -220,7 +220,7 @@ class HandPoseModel(nn.Module):
                     self.scaler.step(self.optimizer)
                     self.scaler.update()
                 else:
-                    outputs = self.model(images) # Prediction
+                    outputs = self.model(images)  # Prediction
                     loss = self.train_loss_func(outputs, landmarks)
                     eval = self.eval_loss_func(outputs, landmarks)
                     loss.backward()
