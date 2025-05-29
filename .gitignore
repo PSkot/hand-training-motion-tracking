@@ -176,4 +176,4 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 
 # Other ignores
-/model/saved_models/
+/model/saved_models/*

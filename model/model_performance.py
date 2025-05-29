@@ -209,34 +209,3 @@ def per_landmark_loss():
 
     with open("logs/model_stats_per_landmark.json", "w") as f:
         json.dump(model_stats, f, indent=4)
-
-
-if __name__ == "__main__":
-    # plot_losses(
-    #     "./logs/Loss_MSE_train.json",
-    #     "./logs/Loss_MSE_val.json",
-    #     output_path="plots/train_val_loss.png",
-    # )
-
-    # idx = 20
-
-    # actual_img = convert_tensor_to_np(
-    #     get_test_hand_image("../config/model_config.yaml", prediction=False, idx=idx)
-    # )
-    # pred_img = convert_tensor_to_np(
-    #     get_test_hand_image("../config/model_config.yaml", prediction=True, idx=idx)
-    # )
-
-    # plot_images(
-    #     [actual_img, pred_img],
-    #     ["Actual landmarks", "Predicted landmarks"],
-    #     "plots/actual_vs_pred_landmarks.png",
-    # )
-
-    with open("logs/model_stats_per_landmark.json", "r") as f:
-        data = json.load(f)
-        train_r2 = data["train_r2"][1:]
-        val_r2 = data["val_r2"][1:]
-        test_r2 = data["test_r2"][1:]
-
-    plot_r2_heatmap(train_r2, val_r2, test_r2, save_path="plots/r2_per_landmark.png")

@@ -13,9 +13,14 @@ PLOT_ORDER = [2, 0, 1]  # Change display order here
 N_CLUSTERS = len(PLOT_ORDER)
 
 
-def visualize_clusters(exercise="fstretch", exercise_state="0000"):
+def visualize_clusters(
+    exercise="fstretch",
+    exercise_state="0000",
+    kmeans_path="./saved_models/kmeans_fstretch_0000_aligned_landmarks.pkl",
+    save_path=None,
+):
     plt.rcParams.update({"font.size": 14})
-    model = model_setup.get_kmeans()
+    model = model_setup.get_kmeans(kmeans_path)
 
     X, *_ = train_kmeans.prepare_landmark_data(exercise, exercise_state)
     cluster_data = list(zip(model.predict(X), X))
@@ -51,11 +56,19 @@ def visualize_clusters(exercise="fstretch", exercise_state="0000"):
 
     fig.suptitle("Distance from Wrist to Landmarks 1–20 by Cluster")
     plt.tight_layout()
-    plt.savefig("plots/landmark_distance.png")
+    if save_path is None:
+        plt.show()
+        return
+    plt.savefig(save_path)
 
 
-def pve_heatmap(exercise="fstretch", exercise_state="0000"):
-    model = model_setup.get_kmeans()
+def pve_heatmap(
+    exercise="fstretch",
+    exercise_state="0000",
+    kmeans_path="./saved_models/kmeans_fstretch_0000_aligned_landmarks.pkl",
+    save_path=None,
+):
+    model = model_setup.get_kmeans(kmeans_path)
 
     X_orig, *_ = train_kmeans.prepare_landmark_data(
         exercise, exercise_state
@@ -131,7 +144,10 @@ def pve_heatmap(exercise="fstretch", exercise_state="0000"):
             )
 
     plt.tight_layout()
-    plt.savefig("plots/PVE_heatmap.png")
+    if save_path is None:
+        plt.show()
+        return
+    plt.savefig(save_path)
 
 
 def plot_image_flip_rotation(
@@ -154,7 +170,7 @@ def plot_image_flip_rotation(
     )
 
 
-def plot_image_jitter_crop(image: torch.Tensor, save_path: str):
+def plot_image_jitter_crop(image: torch.Tensor, save_path: str = None):
     image_np = convert_tensor_to_np(image)
     jittered_image = transforms.ColorJitter(
         brightness=0.5, contrast=0.5, saturation=0.5
@@ -180,6 +196,9 @@ def plot_images(images=[], titles=[], save_path=None):
 
     plt.tight_layout()
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    if save_path is None:
+        plt.show()
+        return
     plt.savefig(save_path, bbox_inches="tight", pad_inches=0.2)
     plt.close()
     print(f"Saved image rotation figure to: {save_path}")
@@ -252,7 +271,9 @@ def get_landmark_flip_plot(landmarks: torch.Tensor, ax):
     ax.view_init(elev=30, azim=-60)  # elev=30, azim=-60
 
 
-def plot_landmark_flip_rotation(landmarks: torch.Tensor, angle: float, save_path: str):
+def plot_landmark_flip_rotation(
+    landmarks: torch.Tensor, angle: float, save_path: str = None
+):
 
     # Create fig and subplots
     fig = plt.figure(figsize=(16, 6))
@@ -278,6 +299,9 @@ def plot_landmark_flip_rotation(landmarks: torch.Tensor, angle: float, save_path
     # Layout
     plt.tight_layout()
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    if save_path is None:
+        plt.show()
+        return
     plt.savefig(save_path)
     plt.close()
     print(f"Saved landmark rotation figure to: {save_path}")

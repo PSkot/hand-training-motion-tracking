@@ -4,6 +4,8 @@ import yaml
 import torchvision.transforms.v2 as transforms
 import numpy as np
 
+def supports_mixed_precision():
+    return torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 7
 
 def compute_distances(sample_21x3):
     wrist = sample_21x3[0]

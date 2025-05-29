@@ -1,9 +1,7 @@
-import random
 import torchvision.transforms.v2 as transforms
 from torch.utils.data import Subset
 from src.HandDataset import HandDataset
 from src.HandPoseModel import HandPoseModel
-import math
 import torch.nn as nn
 import torchvision.models as models
 import os
@@ -109,7 +107,7 @@ def initialize_model(
 
         model.early_stopping.best_loss = data["val_loss"]
         model.start_epoch = data["epoch"]
-        model.early_stopping.counter = data["plateu"]
+        model.early_stopping.counter = data["plateau"]
 
     return model
 

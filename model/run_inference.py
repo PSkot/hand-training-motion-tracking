@@ -2,7 +2,6 @@ import src.model_setup as model_setup
 import argparse
 import glob
 from torchvision.io import read_image
-import torchvision.transforms.functional as TF
 import torch.nn.functional as F
 import torch
 import yaml

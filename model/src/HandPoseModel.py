@@ -55,7 +55,7 @@ class EarlyStopping:
                     {
                         "val_loss": self.best_loss,
                         "epoch": epoch,
-                        "plateu": self.counter,
+                        "plateau": self.counter,
                     },
                     f,
                 )
@@ -92,12 +92,12 @@ class HandPoseModel(nn.Module):
         for hand landmark detection.
 
         Args:
-            model (nn.Module): _description_
-            dataset (torch.utils.data.Dataset): _description_
-            lr (float, optional): _description_. Defaults to 0.001.
-            batch_size (int, optional): _description_. Defaults to 32.
-            test_split (float, optional): _description_. Defaults to 0.1.
-            val_split (float, optional): _description_. Defaults to 0.1.
+            model (nn.Module): The base model
+            dataset (torch.utils.data.Dataset): Torch dataset
+            lr (float, optional): Learning rate. Defaults to 0.001.
+            batch_size (int, optional): Batch size. Defaults to 32.
+            test_split (float, optional): The test set split. Defaults to 0.1.
+            val_split (float, optional): The val set split. Defaults to 0.1.
         """
 
         super(HandPoseModel, self).__init__()
@@ -112,9 +112,10 @@ class HandPoseModel(nn.Module):
         self.inference_transforms = inference_transforms
         self.start_epoch = 0
 
-        self.scaler = torch.amp.GradScaler(
-            self.device.type
-        )  # torch.amp for mixed precision training. Might not be supported on older GPUs
+        if helpers.supports_mixed_precision():
+            self.scaler = torch.amp.GradScaler(
+                self.device.type
+            )  # torch.amp for mixed precision training. Might not be supported on older GPUs
 
         self.batch_size = batch_size
         self.early_stopping = early_stopping(
@@ -206,16 +207,24 @@ class HandPoseModel(nn.Module):
 
                 self.optimizer.zero_grad()
 
-                with torch.amp.autocast(self.device.type):
-                    images = self.train_transforms(images)
-                    outputs = self.model(images)  # Prediction
+                # Use mixed precision if supported
+                if helpers.supports_mixed_precision():
+                    with torch.amp.autocast(self.device.type):
+                        images = self.train_transforms(images)
+                        outputs = self.model(images)  # Prediction
 
+                        loss = self.train_loss_func(outputs, landmarks)
+                        eval = self.eval_loss_func(outputs, landmarks)
+
+                    self.scaler.scale(loss).backward()
+                    self.scaler.step(self.optimizer)
+                    self.scaler.update()
+                else:
+                    outputs = self.model(images) # Prediction
                     loss = self.train_loss_func(outputs, landmarks)
                     eval = self.eval_loss_func(outputs, landmarks)
-
-                self.scaler.scale(loss).backward()
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
+                    loss.backward()
+                    self.optimizer.step()
 
                 train_loss += loss.item()
                 train_eval += eval.item()

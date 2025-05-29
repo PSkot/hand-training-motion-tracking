@@ -1,6 +1,4 @@
 import cv2
-import yaml
-import pickle
 import numpy as np
 import torch
 from run_inference import crop_resize_new
@@ -16,9 +14,6 @@ import src.helpers as helpers
 import pyqtgraph.opengl as gl
 import pyqtgraph as pg
 import train_kmeans as train_kmeans
-from scipy.spatial.transform import Rotation as Rscipy
-import datetime
-import os
 from scipy.spatial.transform import Rotation as Rscipy
 
 CLUSTER_MAPPING = helpers.read_user_feedback()

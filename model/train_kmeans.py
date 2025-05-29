@@ -4,7 +4,6 @@ import json
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import pickle
-from collections import Counter
 
 
 def elbow_plot(

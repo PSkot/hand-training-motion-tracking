@@ -5,8 +5,6 @@ from torch.utils.data import Dataset
 from torchvision.io import read_image
 import torchvision.transforms.v2 as transforms
 import numpy as np
-from collections import defaultdict
-
 
 class HandDataset(Dataset):
     def __init__(self, root_dir, apply_augmentation=True):
@@ -65,8 +63,8 @@ class HandDataset(Dataset):
         Loads calibration data for all cameras given a hand- and frame id.
 
         Args:
-            hand_id (str): _description_
-            frame_id (str): _description_
+            hand_id (str): ID of the hand based on the HanCo folder name
+            frame_id (str): ID of the frame based on the HanCo file name
         """
 
         calib_data = self._load_json("calib", hand_id, frame_id)
