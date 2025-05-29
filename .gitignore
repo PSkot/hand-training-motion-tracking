@@ -177,3 +177,4 @@ pyrightconfig.json
 
 # Other ignores
 /model/saved_models/*
+/dataset/*

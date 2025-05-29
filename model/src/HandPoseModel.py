@@ -29,9 +29,7 @@ class EarlyStopping:
         self.best_loss = float("inf")
         self.counter = 0
 
-    def __call__(
-        self, val_loss: float, model: torch.nn.Module, epoch: int, tuning: bool
-    ) -> bool:
+    def __call__(self, val_loss: float, model: torch.nn.Module, epoch: int) -> bool:
         """
         Call this function at the end of each epoch to check if training should stop.
 

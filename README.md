@@ -1,5 +1,17 @@
-# hand-detection
-Deep Learning model + software for hand motion tracking
+# hand-training-motion-tracking
+Deep CNN, KMeans model and software for hand motion tracking
+
+## BENCHMARK SCRIPT WARNING
+Please note that the benchmark script located in /model/benchmark will download the dataset by default!!!
+
+We have included it for the curious reader, however running the script will take a while, if the data is not present in the root/dataset folder. Also, benchmarking on CPU will take several hours.
+
+Should you still be interested (in either benchmarking or downloading the data), you run it from the model folder:
+
+```shell
+cd model
+python -m benchmark.benchmark
+```
 
 ## Dataset
 The model is trained using the [HanCo dataset](https://lmb.informatik.uni-freiburg.de/resources/datasets/HanCo.en.html).
@@ -9,14 +21,20 @@ A copy is stored in a [GCP Bucket](https://console.cloud.google.com/storage/brow
 ## Set up config file
 Create a yaml file as follows:
 ```yaml
+TUNING: False
 SUBSET: Null # Null uses full dataset, otherwise specify int
 IMAGENET_PARAMS:
   mean: [0.485, 0.456, 0.406]
   std: [0.229, 0.224, 0.225]
-DATA_PATH: C:\Users\pete_\Documents\HanCo Dataset\HanCo_full
-BATCH_SIZE: 256
+DATA_PATH: Null # Specify path of set to null to get path from environment variable HANCO_DATA_PATH
+BATCH_SIZE: 16
+EPOCHS: 200
+EARLY_STOPPING_PATIENCE: 10
+HUBER_BETA: 0.01
+INITIAL_LR: 0.00001
 RANDOM_SEED: 42
-EPOCHS: 100
+MODEL_PATH: .\saved_models # Path in which any models are saved
+MODEL_NAME: best_model.pth # Name of any CNN model you would like to use by default
 ```
 
 ## Virtual environment and dependencies

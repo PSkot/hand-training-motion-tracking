@@ -55,7 +55,6 @@ def initialize_model(
     dataset_path = config.get("DATA_PATH")
     if dataset_path is None:
         dataset_path = os.environ.get("HANCO_DATA_PATH")
-    tuning = config.get("TUNING")
 
     train_transforms = transforms.Compose(
         [
@@ -98,7 +97,6 @@ def initialize_model(
         inference_transforms=inference_transforms,
         early_stopping_path=saved_model_path,
         early_stopping_patience=early_stopping_patience,
-        tuning=tuning,
     )
 
     if os.path.exists(os.path.join(saved_model_path, "checkpoint_stats.json")):
@@ -170,9 +168,7 @@ def load_model(
     model, num_features = get_model()
     setattr(model, final_layer, get_model_head(num_features))
 
-    if saved_model_path and not config.get(
-        "TUNING"
-    ):  # Loads state dict if loading from a saved checkpoint
+    if saved_model_path:  # Loads state dict if loading from a saved checkpoint
         if not os.path.exists(os.path.join(saved_model_path, model_name)):
             print("No saved model, starting from base model.")
             return model

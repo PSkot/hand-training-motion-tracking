@@ -12,8 +12,7 @@ from torchvision.models import mobilenet_v2, MobileNet_V2_Weights
 from tabulate import tabulate
 
 # ---------------------------- Parameters ----------------------------
-data_path = "./data"
-saved_model_path = "./best_model.pth"
+data_path = "../dataset"
 batch_size = 64
 learning_rate = 1e-4
 epochs = 3
@@ -218,7 +217,6 @@ def train(model, train_loader, val_loader):
         print(
             f"Epoch {epoch+1}: Train Loss = {total_loss:.4f} | Val Loss = {val_loss:.4f}"
         )
-        # torch.save(model.state_dict(), saved_model_path)
 
 
 # ---------------------------- Evaluation ----------------------------
